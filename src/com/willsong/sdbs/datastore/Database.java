@@ -79,8 +79,6 @@ public class Database {
 	 * Perform exit clean up.
 	 */
 	public void onExit() {
-		System.out.println("Performing clean up of database '" + mName + "'");
-		
 		Iterator<String> it = mTables.keySet().iterator();
 		while (it.hasNext()) {
 			Table table = mTables.get(it.next());

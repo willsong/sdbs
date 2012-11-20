@@ -139,6 +139,7 @@ public class Catalog {
 	 * Perform exit clean up.
 	 */
 	public void onExit() {
+		System.out.println("Cleaning up databases...");
 		Iterator<String> it = mCatalog.keySet().iterator();
 		while (it.hasNext()) {
 			Database db = mCatalog.get(it.next());

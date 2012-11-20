@@ -1,7 +1,6 @@
 package com.willsong.sdbs.datastore;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 
 /**
  * Represents a Tuple instance.

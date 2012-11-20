@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import com.willsong.sdbs.datastore.Catalog;
 import com.willsong.sdbs.datastore.Database;
 import com.willsong.sdbs.datastore.Table;
-import com.willsong.sdbs.datastore.TempTable;
 import com.willsong.sdbs.datastore.Tuple;
 import com.willsong.sdbs.statement.SelectStatement;
 import com.willsong.sdbs.statement.WhereClause;
