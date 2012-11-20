@@ -15,6 +15,7 @@ public class Table {
 
 	protected Database mDatabase;
 	protected String mName;
+	protected String mFullName;
 	protected ArrayList<FieldDefinition> mFields;
 	protected ArrayList<Tuple> mTuples;
 	protected Class<?> mDef;
@@ -22,6 +23,7 @@ public class Table {
 	public Table(Database database, String name) {
 		mDatabase = database;
 		mName = name;
+		mFullName = database.getName() + "_" + name;
 		mFields = new ArrayList<FieldDefinition>();
 		mTuples = new ArrayList<Tuple>();
 	}
@@ -107,14 +109,14 @@ public class Table {
 	public void create() throws ClassNotFoundException, IOException, InstantiationException, IllegalAccessException {
 		TableDefinitionLoader loader = new TableDefinitionLoader();
 		loader.setFields(mFields);
-		mDef = loader.loadClass(mDatabase.getName() + "_" + mName);
+		mDef = loader.loadClass(mFullName);
 		if (mDef == null) {
 			throw new ClassNotFoundException("Failed to load table definition");
 		}
 		mDatabase.addTable(mName, this);
 	}
 	
-	public String getFullName() {
+	public String getFullDisplayName() {
 		return mDatabase.getName() + "." + mName;
 	}
 	
@@ -163,7 +165,7 @@ public class Table {
 	
 	public String toString() {
 		StringBuffer buffer = new StringBuffer();
-		buffer.append("Table: ").append(getFullName()).append("\n")
+		buffer.append("Table: ").append(getFullDisplayName()).append("\n")
 			.append("   Number of fields: ").append(mFields.size()).append("\n")
 			.append("   Number of tuples: ").append(mTuples.size()).append("\n");
 		

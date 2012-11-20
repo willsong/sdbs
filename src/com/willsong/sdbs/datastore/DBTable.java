@@ -18,7 +18,7 @@ public class DBTable extends Table {
 	}
 
 	public void load(File file) throws IOException {
-		System.out.println("Loading table " + getFullName() + "...");
+		System.out.println("Loading table " + getFullDisplayName() + "...");
 		CSVReader reader = new CSVReader(new FileReader(file));
 		
 		// First line is the field definition

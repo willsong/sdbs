@@ -78,22 +78,26 @@ public class FieldDefinition {
 		return me;
 	}
 	
-	public String getTypeString() {
+	public String getTypeString(boolean camelCase) {
 		String type = "";
 		
 		switch (mType) {
 			case FIELD_TYPE_INTEGER:
-				type += "INTEGER";
+				type += camelCase ? "Integer" : "INTEGER";
 				break;
 			case FIELD_TYPE_STRING:
-				type += "STRING";
+				type += camelCase ? "String" : "STRING";
 				break;
 			case FIELD_TYPE_DOUBLE:
-				type += "DOUBLE";
+				type += camelCase ? "Double" : "DOUBLE";
 				break;
 		}
 		
 		return type;
+	}
+	
+	public String getTypeString() {
+		return getTypeString(false);
 	}
 	
 	public static boolean isValidType(int type) {
