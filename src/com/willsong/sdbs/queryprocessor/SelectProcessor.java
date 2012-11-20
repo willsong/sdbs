@@ -1,11 +1,13 @@
 package com.willsong.sdbs.queryprocessor;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 import com.willsong.sdbs.datastore.Catalog;
 import com.willsong.sdbs.datastore.Database;
 import com.willsong.sdbs.datastore.Table;
 import com.willsong.sdbs.datastore.Tuple;
+import com.willsong.sdbs.queryprocessor.joinengine.SimpleJoin;
 import com.willsong.sdbs.statement.SelectStatement;
 import com.willsong.sdbs.statement.WhereClause;
 
@@ -113,22 +115,24 @@ public class SelectProcessor extends QueryProcessor {
 	private void optimize() throws ProcessorException {}
 	
 	private void execute() throws ProcessorException {
-		// Get target table
 		Table result = null;
 		if (mTables.size() == 1) {
+			// Only 1 table; just do it ourselves
 			 result = mTables.get(0);
+			 
+			// Perform selection
+			if (mWheres.size() > 0) {
+				result = AlgebraicOperations.selection(result, mWheres);
+			}
+			
+			// Perform projection
+			if (mFields.size() > 0) {
+				result = AlgebraicOperations.projection(result, mFields);
+			}
+			
 		} else {
-			result = AlgebraicOperations.crossProduct(mTables);
-		}
-		
-		// Perform selection
-		if (mWheres.size() > 0) {
-			result = AlgebraicOperations.selection(result, mWheres);
-		}
-		
-		// Perform projection
-		if (mFields.size() > 0) {
-			result = AlgebraicOperations.projection(result, mFields);
+			// Join
+			result = SimpleJoin.join(mTables, mWheres, mFields);
 		}
 		
 		// Format and print

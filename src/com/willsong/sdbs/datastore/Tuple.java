@@ -1,9 +1,11 @@
 package com.willsong.sdbs.datastore;
 
 import java.lang.reflect.Field;
+import java.util.Comparator;
 
 /**
  * Represents a Tuple instance.
+ * @TODO: remove???
  * 
  * @author	William Song, ID: 2012-23953, Email: willsong@kdb.snu.ac.kr
  */
@@ -62,5 +64,32 @@ public class Tuple {
 		}
 		
 		return fieldList;
+	}
+	
+	/**
+	 * Comparator class for Tuples.
+	 * 
+	 * @author William Song, ID: 2012-23953, Email: willsong@kdb.snu.ac.kr
+	 */
+	public static class TupleComparator implements Comparator<Tuple> {
+		
+		protected Field imCriteria;
+		
+		public TupleComparator(Field criteriaField) {
+			imCriteria = criteriaField;
+		}
+
+		@Override
+		public int compare(Tuple t1, Tuple t2) {
+			try {
+				Comparable value1 = (Comparable) imCriteria.get(t1.getData());
+				Comparable value2 = (Comparable) imCriteria.get(t2.getData());
+				
+				return value1.compareTo(value2);
+				
+			} catch (IllegalArgumentException | IllegalAccessException e) {
+				return 0;
+			}
+		}
 	}
 }

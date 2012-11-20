@@ -60,6 +60,15 @@ public class AlgebraicOperations {
 		}
 	}
 
+	/**
+	 * Perform the given projection on the given table, and return a TempTable containing
+	 * the results.
+	 * 
+	 * @param	table		the table to perform the projection on
+	 * @param	fieldList	the list of field names to project
+	 * @return				the result
+	 * @throws	ProcessorException
+	 */
 	public static TempTable projection(Table table, ArrayList<String> fieldList) throws ProcessorException {
 		try {
 			

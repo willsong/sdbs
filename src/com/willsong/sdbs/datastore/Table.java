@@ -3,7 +3,9 @@ package com.willsong.sdbs.datastore;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collections;
 
+import com.willsong.sdbs.datastore.Tuple.TupleComparator;
 import com.willsong.sdbs.statement.WhereClause;
 
 /**
@@ -161,6 +163,11 @@ public class Table {
 	
 	public Class<?> getDefinition() {
 		return mDef;
+	}
+	
+	public void sort(Field field) {
+		TupleComparator comp = new Tuple.TupleComparator(field);
+		Collections.sort(mTuples, comp);
 	}
 	
 	public String toString() {
