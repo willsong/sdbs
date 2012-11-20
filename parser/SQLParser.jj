@@ -1,0 +1,313 @@
+/**
+SQL Parser for javacc.
+Name: William Song
+ID: 2012-23953
+Email: willsong@kdb.snu.ac.kr
+*/
+
+options {
+  STATIC = false;
+}
+
+PARSER_BEGIN(SQLParser)
+
+public class SQLParser {
+
+  protected Statement mStmt;
+
+  public static void main(String args[]) throws ParseException {
+    SQLParser parser = new SQLParser(System.in);
+    parser.SQL();
+  }
+
+  public Statement getCurrentStmt() {
+    return mStmt;
+  }
+}
+
+PARSER_END(SQLParser)
+
+SKIP: { " " |"\t" | "\r" | "\n" | "\r\n" }
+
+TOKEN: { <USE: "use" | "USE" | "Create"> }
+TOKEN: { <SHOW: "show" | "SHOW" | "Show"> }
+TOKEN: { <CREATE: "create" | "CREATE" | "Create"> }
+TOKEN: { <INSERT: "insert" | "INSERT" | "Insert"> }
+TOKEN: { <UPDATE: "update" | "UPDATE" | "Update"> }
+TOKEN: { <SELECT: "select" | "SELECT" | "Select"> }
+TOKEN: { <EXIT: "exit" | "EXIT" | "Exit"> }
+
+TOKEN: { <FROM: "from" | "FROM" | "From"> }
+TOKEN: { <WHERE: "where" | "WHERE" | "Where"> }
+TOKEN: { <INTO: "into" | "INTO" | "Into"> }
+TOKEN: { <VALUES: "values" | "VALUES" | "Values"> }
+TOKEN: { <SET: "set" | "SET" | "Set"> }
+TOKEN: { <AND: "and" | "AND" | "And"> }
+
+TOKEN: { <DATABASES: "databases" | "DATABASES" | "Databases"> }
+TOKEN: { <DATABASE: "database" | "DATABASE" | "Database"> }
+TOKEN: { <TABLES: "tables" | "TABLES" | "Tables"> }
+TOKEN: { <TABLE: "table" | "TABLE" | "Table"> }
+
+TOKEN: { <TYPE_INTEGER: "INTEGER"> }
+TOKEN: { <TYPE_STRING: "STRING"> }
+TOKEN: { <TYPE_DOUBLE: "DOUBLE"> }
+
+TOKEN: { <STMT_DELIMITER: ";"> }
+TOKEN: { <STAR: "*"> }
+TOKEN: { <FIELD_DELIMITER: ","> }
+TOKEN: { <COMP_EQ: "="> }
+TOKEN: { <COMP_GT: ">"> }
+TOKEN: { <COMP_GE: ">="> }
+TOKEN: { <COMP_LT: "<"> }
+TOKEN: { <COMP_LE: "<="> }
+TOKEN: { <BRACKET_OPEN: "("> }
+TOKEN: { <BRACKET_CLOSE: ")"> }
+TOKEN: { <INTEGER: ("-")? ["0"-"9"] (["0"-"9"])*> }
+TOKEN: { <DOUBLE: ("-")? (["0"-"9"])+ "." (["0"-"9"])+> }
+TOKEN: { <ALPHANUMERIC: ["a"-"z", "A"-"Z"] (["a"-"z", "A"-"Z", "0"-"9"])*> }
+
+/** Root production. */
+void SQL() :
+{}
+{
+  (
+    ShowStatement()
+    | UseStatement()
+    | CreateStatement()
+    | InsertStatement()
+    | UpdateStatement()
+    | SelectStatement()
+    | (<EXIT> | <EOF>) { mStmt = new ExitStatement(); }
+  )
+}
+
+void ShowStatement() :
+{
+  ShowStatement stmt = new ShowStatement();
+  Token t;
+}
+{
+  t = <SHOW> { stmt.addString(t.image); }
+  (
+    t = <DATABASES> { stmt.setIsDatabase(true); stmt.addString(t.image); }
+    | t = <TABLES> { stmt.setIsDatabase(false); stmt.addString(t.image); }
+  )
+  <STMT_DELIMITER> { mStmt = stmt; }
+}
+
+void UseStatement() :
+{
+  UseStatement stmt = new UseStatement();
+  Token t;
+}
+{
+  t = <USE> { stmt.addString(t.image); }
+  t = <ALPHANUMERIC> { stmt.setDatabase(t.image); }
+  <STMT_DELIMITER> { mStmt = stmt; }
+}
+
+void CreateStatement() :
+{
+  Token t;
+  CreateStatement stmt = new CreateStatement();
+}
+{
+  t = <CREATE> { stmt.addString(t.image); }
+  (
+    CreateDatabaseStatement(stmt)
+    | CreateTableStatement(stmt)
+  )
+  <STMT_DELIMITER> { mStmt = stmt; }
+}
+
+void CreateDatabaseStatement(CreateStatement stmt):
+{
+  Token t;
+}
+{
+  t = <DATABASE> { stmt.setIsDatabase(true); stmt.addString(t.image); }
+  t = <ALPHANUMERIC> { stmt.setName(t.image); }
+}
+
+void CreateTableStatement(CreateStatement stmt):
+{
+  Token t;
+}
+{
+  t = <TABLE> { stmt.setIsDatabase(false); stmt.addString(t.image); }
+  t = <ALPHANUMERIC> { stmt.setName(t.image); }
+  t = <BRACKET_OPEN> { stmt.addString(t.image); }
+  FieldDefinition(stmt)
+  (
+    t = <FIELD_DELIMITER> { stmt.addString(t.image); }
+    FieldDefinition(stmt)
+  )*
+  t = <BRACKET_CLOSE> { stmt.addString(t.image); }
+}
+
+void FieldDefinition(CreateStatement stmt) :
+{
+  Token t;
+  FieldDefinition field = new FieldDefinition();
+}
+{
+  t = <ALPHANUMERIC> { field.setName(t.image); }
+  (
+    t = <TYPE_INTEGER> { field.setType(FieldDefinition.FIELD_TYPE_INTEGER); }
+    | t = <TYPE_STRING> { field.setType(FieldDefinition.FIELD_TYPE_STRING); }
+    | t = <TYPE_DOUBLE> { field.setType(FieldDefinition.FIELD_TYPE_DOUBLE); }
+  ) { stmt.addField(field); }
+}
+
+void InsertStatement() :
+{
+  Token t;
+  InsertStatement stmt = new InsertStatement();
+}
+{
+  t = <INSERT> { stmt.addString(t.image); }
+  t = <INTO> { stmt.addString(t.image); }
+  t = <ALPHANUMERIC> { stmt.setName(t.image); }
+  t = <VALUES> { stmt.addString(t.image); }
+  t = <BRACKET_OPEN> { stmt.addString(t.image); }
+  ValueDefinition(stmt)
+  (
+    t = <FIELD_DELIMITER> { stmt.addString(t.image); }
+    ValueDefinition(stmt)
+  )*
+  t = <BRACKET_CLOSE> { stmt.addString(t.image); }
+  <STMT_DELIMITER> { mStmt = stmt; }
+}
+
+void ValueDefinition(InsertStatement stmt) :
+{
+  Token t;
+}
+{
+  (
+    t = <INTEGER> { stmt.addValue(new Integer(Integer.parseInt(t.image))); }
+    | t = <DOUBLE> { stmt.addValue(new Double(Double.parseDouble(t.image))); }
+    | t = <ALPHANUMERIC> { stmt.addValue(t.image); }
+  )
+}
+
+void UpdateStatement() :
+{
+  Token t;
+  UpdateStatement stmt = new UpdateStatement();
+}
+{
+  t = <UPDATE> { stmt.addString(t.image); }
+  t = <ALPHANUMERIC> { stmt.setName(t.image); }
+  SetClause(stmt)
+  [WhereClause(stmt)]
+  <STMT_DELIMITER> { mStmt = stmt; }
+}
+
+void SetClause(UpdateStatement stmt) :
+{
+  Token t;
+}
+{
+  t = <SET> { stmt.addString(t.image); }
+  t = <ALPHANUMERIC> { stmt.setField(t.image); }
+  t = <COMP_EQ> { stmt.addString(t.image); }
+  (
+    t = <INTEGER> { stmt.setValue(new Integer(Integer.parseInt(t.image))); }
+    | t = <DOUBLE> { stmt.setValue(new Double(Double.parseDouble(t.image))); }
+    | t = <ALPHANUMERIC> { stmt.setValue(t.image); }
+  )
+}
+
+void SelectStatement() :
+{
+  SelectStatement stmt = new SelectStatement();
+}
+{
+  SelectClause(stmt)
+  FromClause(stmt)
+  [WhereClause(stmt)]
+  <STMT_DELIMITER> { mStmt = stmt; }
+}
+
+void SelectClause(SelectStatement stmt) :
+{
+  Token t;
+}
+{
+  t = <SELECT> { stmt.addString(t.image); }
+  (
+    t = <STAR> { stmt.addSelect(t.image); }
+    | t = <ALPHANUMERIC> { stmt.addSelect(t.image); }
+    (
+      t = <FIELD_DELIMITER> { stmt.addString(t.image); }
+      t = <ALPHANUMERIC> { stmt.addSelect(t.image); }
+    )*
+  )
+}
+
+void FromClause(SelectStatement stmt) :
+{
+  Token t;
+}
+{
+  t = <FROM> { stmt.addString(t.image); }
+  t = <ALPHANUMERIC> { stmt.addFrom(t.image); }
+  (
+    t = <FIELD_DELIMITER> { stmt.addString(t.image); }
+    t = <ALPHANUMERIC> { stmt.addFrom(t.image); }
+  )*
+}
+
+void WhereClause(WhereStatement stmt) :
+{
+  Token t;
+}
+{
+  t = <WHERE> { stmt.addString(t.image); }
+  (
+    WhereItem(stmt)
+    |
+    (
+      WhereItemNestable(stmt)
+      (
+        t = <AND> { stmt.addString(t.image); }
+        WhereItemNestable(stmt)
+      )*
+    )
+  )
+}
+
+void WhereItem(WhereStatement stmt) :
+{
+  Token t;
+  WhereClause where = new WhereClause();
+}
+{
+  t = <ALPHANUMERIC> { where.setField(t.image); }
+  (
+    t = <COMP_EQ> { where.setCompType(WhereClause.COMP_EQ); }
+    | t = <COMP_GT> { where.setCompType(WhereClause.COMP_GT); }
+    | t = <COMP_GE> { where.setCompType(WhereClause.COMP_GE); }
+    | t = <COMP_LT> { where.setCompType(WhereClause.COMP_LT); }
+    | t = <COMP_LE> { where.setCompType(WhereClause.COMP_LE); }
+  )
+  (
+    t = <INTEGER> { where.setValue(new Integer(Integer.parseInt(t.image))); }
+    | t = <DOUBLE> { where.setValue(new Double(Double.parseDouble(t.image))); }
+    | t = <ALPHANUMERIC> { where.setValue(t.image); }
+  )
+  { stmt.addWhere(where); }
+}
+
+void WhereItemNestable(WhereStatement stmt) :
+{
+  Token t;
+}
+{
+  t = <BRACKET_OPEN> { stmt.addString(t.image); }
+  WhereItem(stmt)
+  t = <BRACKET_CLOSE> { stmt.addString(t.image); }
+}
+
