@@ -1,6 +1,7 @@
 package com.willsong.sdbs.datastore;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.UUID;
 
 /**
@@ -15,10 +16,18 @@ public class TempTable extends Table {
 		// @TODO: use persistent name? for caching?
 	}
 	
+//	@Override
+//	public void create() throws ClassNotFoundException, IOException, InstantiationException, IllegalAccessException {
+//		super.create();
+//	}
+
+	/**
+	 * Remove metadata.
+	 */
 	public void remove() {
 		String fs = System.getProperty("file.separator");
 		String targetDir = Catalog.getInstance().getMetaDir();
-		String newFile = targetDir + fs + mDatabase.getName() + "_" + mName;
+		String newFile = targetDir + fs + this.mDef.getName();
 		
 		File src = new File(newFile + ".java");
 		src.delete();
