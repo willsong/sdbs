@@ -22,7 +22,7 @@ public class SDBS {
 	
 	public static final int VERSION_MAJOR = 1;
 	public static final int VERSION_MINOR = 0;
-	public static final int VERSION_RELEASE = 2;
+	public static final int VERSION_RELEASE = 3;
 	
 	private SQLParser mParser;
 	private Catalog mCatalog;
@@ -96,8 +96,8 @@ public class SDBS {
 				}
 			}
 		}
-		
-		// @TODO: CLEAN UP CODE GOES HERE
+
+		mCatalog.onExit();
 		System.out.println("Exiting... ciao!");
 	}
 	

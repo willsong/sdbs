@@ -135,6 +135,17 @@ public class Catalog {
 		}
 	}
 	
+	/**
+	 * Perform exit clean up.
+	 */
+	public void onExit() {
+		Iterator<String> it = mCatalog.keySet().iterator();
+		while (it.hasNext()) {
+			Database db = mCatalog.get(it.next());
+			db.onExit();
+		}
+	}
+	
 	public String toString() {
 		StringBuffer buffer = new StringBuffer();
 		buffer.append("Number of databases: ").append(mCatalog.size()).append("\n");

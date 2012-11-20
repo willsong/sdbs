@@ -75,6 +75,21 @@ public class Database {
 		return names;
 	}
 	
+	/**
+	 * Perform exit clean up.
+	 */
+	public void onExit() {
+		System.out.println("Performing clean up of database '" + mName + "'");
+		
+		Iterator<String> it = mTables.keySet().iterator();
+		while (it.hasNext()) {
+			Table table = mTables.get(it.next());
+			if (table instanceof TempTable) {
+				((TempTable) table).remove();
+			}
+		}
+	}
+	
 	public String toString() {
 		StringBuffer buffer = new StringBuffer();
 		buffer.append("Database: ").append(mName).append("\n")
