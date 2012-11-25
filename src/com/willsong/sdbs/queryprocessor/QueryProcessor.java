@@ -50,8 +50,9 @@ public abstract class QueryProcessor {
 		}
 		
 		double procTime = mProcTime / 1000;
+		int rowSize = result.size() > 1 ? result.size() - 1 : 0;
 		
-		buffer.append("\nQuery returned " + (result.size() - 1) +" row(s) in " + procTime + " seconds.");
+		buffer.append("\nQuery returned " + rowSize +" row(s) in " + procTime + " seconds.");
 		
 		return buffer.toString();
 	}

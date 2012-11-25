@@ -231,9 +231,9 @@ public class SQLParser implements SQLParserConstants {
       t = jj_consume_token(DOUBLE);
                      stmt.addValue(new Double(Double.parseDouble(t.image)));
       break;
-    case ALPHANUMERIC:
-      t = jj_consume_token(ALPHANUMERIC);
-                           stmt.addValue(t.image);
+    case STRING_DELIMITER:
+      t = StringValue();
+                          stmt.addValue(t.image);
       break;
     default:
       jj_la1[7] = jj_gen;
@@ -279,9 +279,9 @@ public class SQLParser implements SQLParserConstants {
       t = jj_consume_token(DOUBLE);
                      stmt.setValue(new Double(Double.parseDouble(t.image)));
       break;
-    case ALPHANUMERIC:
-      t = jj_consume_token(ALPHANUMERIC);
-                           stmt.setValue(t.image);
+    case STRING_DELIMITER:
+      t = StringValue();
+                          stmt.setValue(t.image);
       break;
     default:
       jj_la1[9] = jj_gen;
@@ -436,9 +436,9 @@ public class SQLParser implements SQLParserConstants {
       t = jj_consume_token(DOUBLE);
                      where.setValue(new Double(Double.parseDouble(t.image)));
       break;
-    case ALPHANUMERIC:
-      t = jj_consume_token(ALPHANUMERIC);
-                           where.setValue(t.image);
+    case STRING_DELIMITER:
+      t = StringValue();
+                          where.setValue(t.image);
       break;
     default:
       jj_la1[17] = jj_gen;
@@ -455,6 +455,16 @@ public class SQLParser implements SQLParserConstants {
     WhereItem(stmt);
     t = jj_consume_token(BRACKET_CLOSE);
                         stmt.addString(t.image);
+  }
+
+/* === SHARED === */
+  final public Token StringValue() throws ParseException {
+  Token t;
+    jj_consume_token(STRING_DELIMITER);
+    t = jj_consume_token(ALPHANUMERIC);
+    jj_consume_token(STRING_DELIMITER);
+    {if (true) return t;}
+    throw new Error("Missing return statement in function");
   }
 
   /** Generated Token Manager. */
@@ -474,10 +484,10 @@ public class SQLParser implements SQLParserConstants {
       jj_la1_init_1();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x1001,0x1fc1,0x280000,0x500000,0x10000000,0x3800000,0x10000000,0x0,0x4000,0x0,0x4000,0x10000000,0x8000000,0x10000000,0x40000,0x0,0xe0000000,0x0,};
+      jj_la1_0 = new int[] {0x1001,0x1fc1,0x280000,0x500000,0x40000000,0x3800000,0x40000000,0x20000000,0x4000,0x20000000,0x4000,0x40000000,0x8000000,0x40000000,0x40000,0x0,0x80000000,0x20000000,};
    }
    private static void jj_la1_init_1() {
-      jj_la1_1 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x70,0x0,0x70,0x0,0x0,0x40,0x0,0x0,0x44,0x3,0x70,};
+      jj_la1_1 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x0,0xc0,0x0,0xc0,0x0,0x0,0x100,0x0,0x0,0x110,0xf,0xc0,};
    }
 
   /** Constructor with InputStream. */
@@ -594,7 +604,7 @@ public class SQLParser implements SQLParserConstants {
   /** Generate ParseException. */
   public ParseException generateParseException() {
     jj_expentries.clear();
-    boolean[] la1tokens = new boolean[39];
+    boolean[] la1tokens = new boolean[41];
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
@@ -611,7 +621,7 @@ public class SQLParser implements SQLParserConstants {
         }
       }
     }
-    for (int i = 0; i < 39; i++) {
+    for (int i = 0; i < 41; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;

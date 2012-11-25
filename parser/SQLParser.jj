@@ -55,6 +55,8 @@ TOKEN: { <TYPE_DOUBLE: "DOUBLE"> }
 
 TOKEN: { <STMT_DELIMITER: ";"> }
 TOKEN: { <STAR: "*"> }
+TOKEN: { <DOT: "."> }
+TOKEN: { <STRING_DELIMITER: "'" | "\""> }
 TOKEN: { <FIELD_DELIMITER: ","> }
 TOKEN: { <COMP_EQ: "="> }
 TOKEN: { <COMP_GT: ">"> }
@@ -188,7 +190,7 @@ void ValueDefinition(InsertStatement stmt) :
   (
     t = <INTEGER> { stmt.addValue(new Integer(Integer.parseInt(t.image))); }
     | t = <DOUBLE> { stmt.addValue(new Double(Double.parseDouble(t.image))); }
-    | t = <ALPHANUMERIC> { stmt.addValue(t.image); }
+    | t = StringValue() { stmt.addValue(t.image); }
   )
 }
 
@@ -216,7 +218,7 @@ void SetClause(UpdateStatement stmt) :
   (
     t = <INTEGER> { stmt.setValue(new Integer(Integer.parseInt(t.image))); }
     | t = <DOUBLE> { stmt.setValue(new Double(Double.parseDouble(t.image))); }
-    | t = <ALPHANUMERIC> { stmt.setValue(t.image); }
+    | t = StringValue() { stmt.setValue(t.image); }
   )
 }
 
@@ -296,7 +298,7 @@ void WhereItem(WhereStatement stmt) :
   (
     t = <INTEGER> { where.setValue(new Integer(Integer.parseInt(t.image))); }
     | t = <DOUBLE> { where.setValue(new Double(Double.parseDouble(t.image))); }
-    | t = <ALPHANUMERIC> { where.setValue(t.image); }
+    | t = StringValue() { where.setValue(t.image); }
   )
   { stmt.addWhere(where); }
 }
@@ -311,3 +313,15 @@ void WhereItemNestable(WhereStatement stmt) :
   t = <BRACKET_CLOSE> { stmt.addString(t.image); }
 }
 
+/* === SHARED === */
+
+Token StringValue() :
+{
+  Token t;
+}
+{
+  <STRING_DELIMITER>
+  t = <ALPHANUMERIC>
+  <STRING_DELIMITER>
+  { return t; }
+}

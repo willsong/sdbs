@@ -53,27 +53,31 @@ public interface SQLParserConstants {
   /** RegularExpression Id. */
   int STAR = 27;
   /** RegularExpression Id. */
-  int FIELD_DELIMITER = 28;
+  int DOT = 28;
   /** RegularExpression Id. */
-  int COMP_EQ = 29;
+  int STRING_DELIMITER = 29;
   /** RegularExpression Id. */
-  int COMP_GT = 30;
+  int FIELD_DELIMITER = 30;
   /** RegularExpression Id. */
-  int COMP_GE = 31;
+  int COMP_EQ = 31;
   /** RegularExpression Id. */
-  int COMP_LT = 32;
+  int COMP_GT = 32;
   /** RegularExpression Id. */
-  int COMP_LE = 33;
+  int COMP_GE = 33;
   /** RegularExpression Id. */
-  int BRACKET_OPEN = 34;
+  int COMP_LT = 34;
   /** RegularExpression Id. */
-  int BRACKET_CLOSE = 35;
+  int COMP_LE = 35;
   /** RegularExpression Id. */
-  int INTEGER = 36;
+  int BRACKET_OPEN = 36;
   /** RegularExpression Id. */
-  int DOUBLE = 37;
+  int BRACKET_CLOSE = 37;
   /** RegularExpression Id. */
-  int ALPHANUMERIC = 38;
+  int INTEGER = 38;
+  /** RegularExpression Id. */
+  int DOUBLE = 39;
+  /** RegularExpression Id. */
+  int ALPHANUMERIC = 40;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -108,6 +112,8 @@ public interface SQLParserConstants {
     "\"DOUBLE\"",
     "\";\"",
     "\"*\"",
+    "\".\"",
+    "<STRING_DELIMITER>",
     "\",\"",
     "\"=\"",
     "\">\"",
