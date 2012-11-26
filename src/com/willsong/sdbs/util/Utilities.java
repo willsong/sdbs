@@ -5,7 +5,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
-import com.willsong.sdbs.datastore.FieldDefinition;
+import com.willsong.sdbs.statement.FieldDefinition;
 
 /**
  * A collection of utility methods which do not fit anywhere else.

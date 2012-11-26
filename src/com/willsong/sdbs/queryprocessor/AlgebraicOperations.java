@@ -4,11 +4,11 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 
-import com.willsong.sdbs.datastore.FieldDefinition;
 import com.willsong.sdbs.datastore.Table;
 import com.willsong.sdbs.datastore.TableDefinition;
 import com.willsong.sdbs.datastore.TempTable;
 import com.willsong.sdbs.datastore.Tuple;
+import com.willsong.sdbs.statement.FieldDefinition;
 import com.willsong.sdbs.statement.WhereClause;
 
 /**
@@ -69,15 +69,19 @@ public class AlgebraicOperations {
 	 * @return				the result
 	 * @throws	ProcessorException
 	 */
-	public static TempTable projection(Table table, ArrayList<String> fieldList) throws ProcessorException {
+	public static TempTable projection(Table table, ArrayList<FieldDefinition> fieldList) throws ProcessorException {
 		try {
 			
 			// Remove unwanted fields
 			int numFields = fieldList.size();
 			TempTable result = new TempTable(table.getDatabase());
 			for (FieldDefinition fd : table.getFields()) {
-				if (numFields > 0 && fieldList.contains(fd.getName())) {
-					result.addField(fd);
+				if (numFields > 0) {
+					for (FieldDefinition f : fieldList) {
+						if (f.getName().equals(fd.getName())) {
+							result.addField(fd);							
+						}
+					}
 				}
 			}
 			
@@ -101,8 +105,12 @@ public class AlgebraicOperations {
 						String fieldName = fd.getName();
 						Object fieldValue = fd.get(origData);
 						
-						if (numFields > 0 && fieldList.contains(fieldName)) {
-							newDef.getField(fieldName).set(newData, fieldValue);
+						if (numFields > 0) {
+							for (FieldDefinition f : fieldList) {
+								if (f.getName().equals(fd.getName())) {
+									newDef.getField(fieldName).set(newData, fieldValue);
+								}
+							}
 						}
 					}
 					
@@ -115,7 +123,9 @@ public class AlgebraicOperations {
 			return result;
 		
 		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | IOException | IllegalArgumentException | NoSuchFieldException | SecurityException e) {
+			e.printStackTrace();
 			throw new ProcessorException("Failed to perform projection: " + e);
+			
 		}
 	}
 	

@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import javax.tools.JavaCompiler;
 import javax.tools.ToolProvider;
 
+import com.willsong.sdbs.statement.FieldDefinition;
+
 /**
  * Loads the table definition classes from the meta directory.
  * Based on: http://www.ibm.com/developerworks/java/tutorials/j-classloader/section6.html

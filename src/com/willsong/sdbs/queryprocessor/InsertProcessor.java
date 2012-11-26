@@ -4,10 +4,10 @@ import java.util.ArrayList;
 
 import com.willsong.sdbs.datastore.Catalog;
 import com.willsong.sdbs.datastore.Database;
-import com.willsong.sdbs.datastore.FieldDefinition;
 import com.willsong.sdbs.datastore.Table;
 import com.willsong.sdbs.datastore.TableDefinition;
 import com.willsong.sdbs.datastore.Tuple;
+import com.willsong.sdbs.statement.FieldDefinition;
 import com.willsong.sdbs.statement.InsertStatement;
 
 /**

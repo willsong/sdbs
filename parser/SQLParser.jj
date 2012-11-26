@@ -11,6 +11,20 @@ options {
 
 PARSER_BEGIN(SQLParser)
 
+package com.willsong.sdbs.parser;
+
+import com.willsong.sdbs.statement.CreateStatement;
+import com.willsong.sdbs.statement.ExitStatement;
+import com.willsong.sdbs.statement.FieldDefinition;
+import com.willsong.sdbs.statement.InsertStatement;
+import com.willsong.sdbs.statement.SelectStatement;
+import com.willsong.sdbs.statement.ShowStatement;
+import com.willsong.sdbs.statement.Statement;
+import com.willsong.sdbs.statement.UpdateStatement;
+import com.willsong.sdbs.statement.UseStatement;
+import com.willsong.sdbs.statement.WhereClause;
+import com.willsong.sdbs.statement.WhereStatement;
+
 public class SQLParser {
 
   protected Statement mStmt;
@@ -140,15 +154,15 @@ void CreateTableStatement(CreateStatement stmt):
   t = <TABLE> { stmt.setIsDatabase(false); stmt.addString(t.image); }
   t = <ALPHANUMERIC> { stmt.setName(t.image); }
   t = <BRACKET_OPEN> { stmt.addString(t.image); }
-  FieldDefinition(stmt)
+  CreateFieldDefinition(stmt)
   (
     t = <FIELD_DELIMITER> { stmt.addString(t.image); }
-    FieldDefinition(stmt)
+    CreateFieldDefinition(stmt)
   )*
   t = <BRACKET_CLOSE> { stmt.addString(t.image); }
 }
 
-void FieldDefinition(CreateStatement stmt) :
+void CreateFieldDefinition(CreateStatement stmt) :
 {
   Token t;
   FieldDefinition field = new FieldDefinition();
@@ -210,10 +224,11 @@ void UpdateStatement() :
 void SetClause(UpdateStatement stmt) :
 {
   Token t;
+  FieldDefinition f = new FieldDefinition();
 }
 {
   t = <SET> { stmt.addString(t.image); }
-  t = <ALPHANUMERIC> { stmt.setField(t.image); }
+  f = FieldReference() { stmt.setField(f); }
   t = <COMP_EQ> { stmt.addString(t.image); }
   (
     t = <INTEGER> { stmt.setValue(new Integer(Integer.parseInt(t.image))); }
@@ -236,15 +251,15 @@ void SelectStatement() :
 void SelectClause(SelectStatement stmt) :
 {
   Token t;
+  FieldDefinition f = new FieldDefinition();
 }
 {
   t = <SELECT> { stmt.addString(t.image); }
   (
-    t = <STAR> { stmt.addSelect(t.image); }
-    | t = <ALPHANUMERIC> { stmt.addSelect(t.image); }
+    f = FieldReference() { stmt.addSelect(f); }
     (
       t = <FIELD_DELIMITER> { stmt.addString(t.image); }
-      t = <ALPHANUMERIC> { stmt.addSelect(t.image); }
+      f = FieldReference() { stmt.addSelect(f); }
     )*
   )
 }
@@ -285,9 +300,10 @@ void WhereItem(WhereStatement stmt) :
 {
   Token t;
   WhereClause where = new WhereClause();
+  FieldDefinition f1, f2;
 }
 {
-  t = <ALPHANUMERIC> { where.setField(t.image); }
+  f1 = FieldReference() { where.setField(f1); }
   (
     t = <COMP_EQ> { where.setCompType(WhereClause.COMP_EQ); }
     | t = <COMP_GT> { where.setCompType(WhereClause.COMP_GT); }
@@ -299,6 +315,7 @@ void WhereItem(WhereStatement stmt) :
     t = <INTEGER> { where.setValue(new Integer(Integer.parseInt(t.image))); }
     | t = <DOUBLE> { where.setValue(new Double(Double.parseDouble(t.image))); }
     | t = StringValue() { where.setValue(t.image); }
+    | f2 = FieldReference() { where.setValue(f2); }
   )
   { stmt.addWhere(where); }
 }
@@ -325,3 +342,22 @@ Token StringValue() :
   <STRING_DELIMITER>
   { return t; }
 }
+
+FieldDefinition FieldReference() :
+{
+  Token t;
+  FieldDefinition field = new FieldDefinition();
+}
+{
+  LOOKAHEAD(2)
+  t = <ALPHANUMERIC> { field.setTable(t.image); }
+  <DOT>
+  (
+    t = <ALPHANUMERIC> { field.setName(t.image); }
+    | t = <STAR> { field.setName(t.image); }
+  )
+  { return field; }
+  | t = <ALPHANUMERIC> { field.setName(t.image); return field; }
+  | t = <STAR> { field.setName(t.image); return field; }
+}
+

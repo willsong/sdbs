@@ -3,7 +3,6 @@ package com.willsong.sdbs.statement;
 import java.util.ArrayList;
 
 import com.willsong.sdbs.datastore.Catalog;
-import com.willsong.sdbs.datastore.FieldDefinition;
 import com.willsong.sdbs.queryprocessor.CreateProcessor;
 import com.willsong.sdbs.queryprocessor.ProcessorException;
 

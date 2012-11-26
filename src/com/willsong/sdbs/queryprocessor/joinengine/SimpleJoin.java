@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import com.willsong.sdbs.datastore.Table;
 import com.willsong.sdbs.queryprocessor.AlgebraicOperations;
 import com.willsong.sdbs.queryprocessor.ProcessorException;
+import com.willsong.sdbs.statement.FieldDefinition;
 import com.willsong.sdbs.statement.WhereClause;
 
 /**
@@ -23,7 +24,7 @@ public class SimpleJoin extends JoinEngine {
 	 * @return			the resulting relation
 	 * @throws	ProcessorException
 	 */
-	public static Table join(ArrayList<Table> tables, ArrayList<WhereClause> wheres, ArrayList<String> fields) throws ProcessorException {
+	public static Table join(ArrayList<Table> tables, ArrayList<WhereClause> wheres, ArrayList<FieldDefinition> fields) throws ProcessorException {
 		// Get target table
 		Table result = null;
 		if (tables.size() == 1) {

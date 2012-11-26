@@ -31,8 +31,10 @@ public class ShowProcessor extends QueryProcessor {
 		ArrayList<String> names;
 		if (mStmt.isDatabase()) {
 			names = mCatalog.getDBNames();
+			names.add(0, "Databases");
 		} else {
 			names = mCatalog.getCurrentDatabase().getTableNames();
+			names.add(0, "Tables");
 		}
 		
 		ArrayList<Object[]> format = new ArrayList<Object[]>();

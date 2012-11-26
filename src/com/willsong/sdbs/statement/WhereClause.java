@@ -18,15 +18,15 @@ public class WhereClause {
 	public static final int COMP_LT = 4;
 	public static final int COMP_LE = 5;
 	
-	protected String mField;
+	protected FieldDefinition mField;
 	protected Object mValue;
 	protected int mCompType;
 	
-	public void setField(String field) {
+	public void setField(FieldDefinition field) {
 		mField = field;
 	}
 	
-	public String getField() {
+	public FieldDefinition getField() {
 		return mField;
 	}
 
@@ -34,7 +34,15 @@ public class WhereClause {
 		mValue = value;
 	}
 	
-	public void setValue(Object value) {
+	public void setValue(Integer value) {
+		mValue = value;
+	}
+	
+	public void setValue(Double value) {
+		mValue = value;
+	}
+	
+	public void setValue(FieldDefinition value) {
 		mValue = value;
 	}
 	
@@ -63,7 +71,7 @@ public class WhereClause {
 		try {
 		
 			TableDefinition rowData = row.getData();
-			Field field = rowData.getClass().getField(mField);
+			Field field = rowData.getClass().getField(mField.getName());
 			Class<?> fieldType = field.getType();
 			
 			// Perform casting according to variable type. This should be ok since

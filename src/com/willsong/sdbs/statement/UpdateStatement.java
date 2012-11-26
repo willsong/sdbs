@@ -14,7 +14,7 @@ import com.willsong.sdbs.queryprocessor.UpdateProcessor;
 public class UpdateStatement extends WhereStatement {
 	
 	protected String mName;
-	protected String mField;
+	protected FieldDefinition mField;
 	protected Object mValue;
 	protected ArrayList<WhereClause> mWhere;
 	
@@ -28,12 +28,12 @@ public class UpdateStatement extends WhereStatement {
 		return mName;
 	}
 	
-	public void setField(String field) {
+	public void setField(FieldDefinition field) {
 		mField = field;
-		addStringPart(field);
+		addStringPart(field.getName());
 	}
 	
-	public String getField() {
+	public FieldDefinition getField() {
 		return mField;
 	}
 	

@@ -7,6 +7,7 @@ import com.willsong.sdbs.datastore.Database;
 import com.willsong.sdbs.datastore.Table;
 import com.willsong.sdbs.datastore.TableDefinition;
 import com.willsong.sdbs.datastore.Tuple;
+import com.willsong.sdbs.statement.FieldDefinition;
 import com.willsong.sdbs.statement.UpdateStatement;
 import com.willsong.sdbs.statement.WhereClause;
 
@@ -33,7 +34,7 @@ public class UpdateProcessor extends QueryProcessor {
 	
 	private void check() throws ProcessorException {
 		String tableName = mStmt.getName();
-		String field = mStmt.getField();
+		FieldDefinition field = mStmt.getField();
 		Object value = mStmt.getValue();
 		WhereClause where = mStmt.getWhereList().get(0);
 		
@@ -56,7 +57,7 @@ public class UpdateProcessor extends QueryProcessor {
 		}
 		
 		if (where != null) {
-			String whereField = where.getField();
+			FieldDefinition whereField = where.getField();
 			Object whereValue = where.getValue();
 			if (!table.hasField(whereField)) {
 				throw new ProcessorException("Field does not exist in WHERE: " + whereField);
@@ -76,7 +77,7 @@ public class UpdateProcessor extends QueryProcessor {
 		for (Tuple row : result) {
 			TableDefinition obj = row.getData();
 			try {
-				def.getField(mStmt.getField()).set(obj, mStmt.getValue());
+				def.getField(mStmt.getField().getName()).set(obj, mStmt.getValue());
 			} catch (IllegalArgumentException | IllegalAccessException	| NoSuchFieldException | SecurityException e) {
 				throw new ProcessorException("Failed to update records: "+ e);
 			}

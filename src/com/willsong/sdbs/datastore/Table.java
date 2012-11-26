@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import com.willsong.sdbs.datastore.Tuple.TupleComparator;
+import com.willsong.sdbs.statement.FieldDefinition;
 import com.willsong.sdbs.statement.WhereClause;
 
 /**
@@ -58,13 +59,13 @@ public class Table {
 	 * @param 	fieldName	the name of the field to check
 	 * @return				true or false
 	 */
-	public boolean hasField(String fieldName) {
+	public boolean hasField(FieldDefinition fieldName) {
 		if (mDef == null) {
 			return false;
 		}
 		
 		try {
-			mDef.getField(fieldName);
+			mDef.getField(fieldName.getName());
 		} catch (NoSuchFieldException | SecurityException e) {
 			return false;
 		}
@@ -74,18 +75,38 @@ public class Table {
 	/**
 	 * Determines whether the given value is a valid type for the given field or not.
 	 * 
-	 * @param	fieldName	the name of the field to check
+	 * @param	field		the reference of the field to check
 	 * @param	value		the value to check
 	 * @return				true or false
 	 */
-	public boolean isValidFieldValue(String fieldName, Object value) {
+	public boolean isValidFieldValue(FieldDefinition field, Object value) {
 		if (mDef == null) {
 			return false;
 		}
 		
 		try {
-			Field field = mDef.getField(fieldName);
-			return field.getType().equals(value.getClass());
+			Field fieldDef = mDef.getField(field.getName());
+			return fieldDef.getType().equals(value.getClass());
+		} catch (NoSuchFieldException | SecurityException e) {
+			return false;
+		}
+	}
+	
+	/**
+	 * Determines whether the given value is a valid type for the given field or not.
+	 * 
+	 * @param	field		the reference of the field to check
+	 * @param	value		the value to check
+	 * @return				true or false
+	 */
+	public boolean isValidFieldValue(String field, Object value) {
+		if (mDef == null) {
+			return false;
+		}
+		
+		try {
+			Field fieldDef = mDef.getField(field);
+			return fieldDef.getType().equals(value.getClass());
 		} catch (NoSuchFieldException | SecurityException e) {
 			return false;
 		}
@@ -138,13 +159,13 @@ public class Table {
 		if (where == null) {
 			return mTuples;
 		} else {
-			String field = where.getField();
+			FieldDefinition field = where.getField();
 			Object value = where.getValue();
 			
 			ArrayList<Tuple> result = new ArrayList<Tuple>();
 			
 			for (Tuple row : mTuples) {
-				if (row.equals(field, value)) {
+				if (row.equals(field.getName(), value)) {
 					result.add(row);
 				}
 			}

@@ -13,30 +13,27 @@ import com.willsong.sdbs.queryprocessor.SelectProcessor;
  */
 public class SelectStatement extends WhereStatement {
 	
-	protected ArrayList<String> mSelect;
+	protected ArrayList<FieldDefinition> mSelect;
 	protected ArrayList<String> mFrom;
 	protected ArrayList<WhereClause> mWhere;
 	protected boolean mIsAll;
 	
 	public SelectStatement() {
-		mSelect = new ArrayList<String>();
+		mSelect = new ArrayList<FieldDefinition>();
 		mFrom = new ArrayList<String>();
 		mWhere = new ArrayList<WhereClause>();
 	}
 	
-	public void addSelect(String select) {
+	public void addSelect(FieldDefinition select) {
 		mSelect.add(select);
-		if (select.equals("*")) {
-			mIsAll = true;
-		}
-		addStringPart(select);
+		addStringPart(select.getName());
 	}
 	
 	public boolean isAll() {
 		return mIsAll;
 	}
 	
-	public ArrayList<String> getSelectList() {
+	public ArrayList<FieldDefinition> getSelectList() {
 		return mSelect;
 	}
 	

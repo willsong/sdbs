@@ -1,6 +1,5 @@
 package com.willsong.sdbs.queryprocessor;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 import com.willsong.sdbs.datastore.Catalog;
@@ -8,6 +7,7 @@ import com.willsong.sdbs.datastore.Database;
 import com.willsong.sdbs.datastore.Table;
 import com.willsong.sdbs.datastore.Tuple;
 import com.willsong.sdbs.queryprocessor.joinengine.SimpleJoin;
+import com.willsong.sdbs.statement.FieldDefinition;
 import com.willsong.sdbs.statement.SelectStatement;
 import com.willsong.sdbs.statement.WhereClause;
 
@@ -20,13 +20,13 @@ public class SelectProcessor extends QueryProcessor {
 	
 	protected Catalog mCatalog;
 	protected SelectStatement mStmt;
-	protected ArrayList<String> mFields;
+	protected ArrayList<FieldDefinition> mFields;
 	protected Database mDb;
 	protected ArrayList<Table> mTables;
 	protected ArrayList<WhereClause> mWheres;
 	
 	public SelectProcessor(Catalog catalog, SelectStatement stmt) {
-		mFields = new ArrayList<String>();
+		mFields = new ArrayList<FieldDefinition>();
 		mTables = new ArrayList<Table>();
 		mWheres = new ArrayList<WhereClause>();
 		mCatalog = catalog;
@@ -57,21 +57,39 @@ public class SelectProcessor extends QueryProcessor {
 		}
 		
 		// Get fields to project
-		ArrayList<String> selectList = mStmt.getSelectList();
-		for (String select : selectList) {
-			if (!select.equals("*")) {
+		ArrayList<FieldDefinition> selectList = mStmt.getSelectList();
+		for (FieldDefinition select : selectList) {
+			
+			boolean isFullReference = select.isFull();
+			
+			if (!select.isAll()) {
 				boolean hasField = false;
 				for (Table table : mTables) {
-					if (table.hasField(select)) {
+					
+					boolean tableMatch = isFullReference ? table.getName().equals(select.getTable()) : true;
+					
+					if (tableMatch && table.hasField(select)) {
 						hasField = true;
 						break;
 					}
 				}
 				if (!hasField) {
-					throw new ProcessorException("Field does not exist in SELECT: " + select);
+					throw new ProcessorException("Field does not exist in SELECT: " + select.getFullString());
 				}
 				mFields.add(select);
 			} else {
+				if (isFullReference) {
+					boolean hasField = false;
+					for (Table table : mTables) {
+						if (table.getName().equals(select.getTable())) {
+							hasField = true;
+							break;
+						}
+					}
+					if (!hasField) {
+						throw new ProcessorException("Table does not exist in SELECT: " + select.getFullString());
+					}
+				}
 				// @TODO: expand * to all fields?
 			}
 		}
@@ -80,20 +98,22 @@ public class SelectProcessor extends QueryProcessor {
 		ArrayList<WhereClause> whereList = mStmt.getWhereList();
 		for (int i = 0; i < whereList.size(); i++) {
 			WhereClause where = whereList.get(i);
-			String field = where.getField();
+			FieldDefinition field = where.getField();
 			Object value = where.getValue();
 			
 			boolean hasField = false;
 			boolean isValidField = false;
+			boolean isFullReference = field.isFull();
 			
 			for (Table table : mTables) {
-				if (table.hasField(field)) {
+				boolean tableMatch = isFullReference ? table.getName().equals(field.getTable()) : true;
+				if (tableMatch && table.hasField(field)) {
 					hasField = true;
 				}
-				
-				if (table.isValidFieldValue(field, value)) {
+				if (tableMatch && table.isValidFieldValue(field, value)) {
 					isValidField = true;
 				}
+					
 				
 				if (hasField && isValidField) {
 					break;
@@ -103,7 +123,7 @@ public class SelectProcessor extends QueryProcessor {
 			}
 			
 			if (!hasField) {
-				throw new ProcessorException("Field does not exist in WHERE: " + field);
+				throw new ProcessorException("Field does not exist in WHERE: " + field.getFullString());
 			} else if (!isValidField) {
 				throw new ProcessorException("Field value type is invalid in WHERE: " + value);
 			}
