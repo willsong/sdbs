@@ -1,2 +1,2 @@
-ps2db.tables=Students,Courses
+ps2db.tables=Students,Courses,Enrolled
 test.tables=

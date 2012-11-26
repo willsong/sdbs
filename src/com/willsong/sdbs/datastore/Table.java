@@ -65,9 +65,16 @@ public class Table {
 		}
 		
 		try {
-			mDef.getField(fieldName.getName());
+			mDef.getField(fieldName.getFullStringCode());
 		} catch (NoSuchFieldException | SecurityException e) {
-			return false;
+			// Try again with the full name
+			fieldName.setTable(mName);
+			try {
+				mDef.getField(fieldName.getFullStringCode());
+			} catch (NoSuchFieldException | SecurityException e1) {
+				fieldName.setTable(null);
+				return false;
+			}
 		}
 		return true;
 	}
@@ -85,10 +92,40 @@ public class Table {
 		}
 		
 		try {
-			Field fieldDef = mDef.getField(field.getName());
-			return fieldDef.getType().equals(value.getClass());
+			Field fieldDef = mDef.getField(field.getFullStringCode());
+			if (value instanceof FieldDefinition) {
+				Table t = mDatabase.getTable(((FieldDefinition) value).getTable());
+				return fieldDef.getType().equals(t.getFieldType((FieldDefinition) value).getType());
+			} else {
+				return fieldDef.getType().equals(value.getClass());
+			}
 		} catch (NoSuchFieldException | SecurityException e) {
-			return false;
+			// Try again with the full name
+			try {
+				Field fieldDef = mDef.getField(field.getFullStringCode());
+				field.setTable(mName);
+				if (value instanceof FieldDefinition) {
+					Table t = mDatabase.getTable(((FieldDefinition) value).getTable());
+					return fieldDef.getType().equals(t.getFieldType((FieldDefinition) value).getType());
+				} else {
+					return fieldDef.getType().equals(value.getClass());
+				}
+			} catch (NoSuchFieldException | SecurityException e1) {
+				field.setTable(null);
+				return false;
+			}
+		}
+	}
+	
+	public Field getFieldType(FieldDefinition field) {
+		if (mDef == null) {
+			return null;
+		}
+		
+		try {
+			return mDef.getField(field.getFullStringCode());
+		} catch (NoSuchFieldException | SecurityException e) {
+			return null;
 		}
 	}
 	
@@ -165,7 +202,7 @@ public class Table {
 			ArrayList<Tuple> result = new ArrayList<Tuple>();
 			
 			for (Tuple row : mTuples) {
-				if (row.equals(field.getName(), value)) {
+				if (row.equals(field.getFullStringCode(), value)) {
 					result.add(row);
 				}
 			}

@@ -59,6 +59,15 @@ public class WhereClause {
 	}
 	
 	/**
+	 * Determines whether the compared value is a field reference or not.
+	 * 
+	 * @return	true if field reference, false otherwise
+	 */
+	public boolean isReference() {
+		return mValue instanceof FieldDefinition;
+	}
+	
+	/**
 	 * Performs a comparison of the given Tuple with the condition and variable
 	 * of this instance.
 	 * 
@@ -71,18 +80,37 @@ public class WhereClause {
 		try {
 		
 			TableDefinition rowData = row.getData();
-			Field field = rowData.getClass().getField(mField.getName());
+			Field field = rowData.getClass().getField(mField.getFullStringCode());
 			Class<?> fieldType = field.getType();
+			
+			Field refField = null;
+			
+			boolean isReference = isReference();
+			if (isReference) {
+				refField = rowData.getClass().getField(((FieldDefinition) mValue).getFullStringCode());
+			}
 			
 			// Perform casting according to variable type. This should be ok since
 			// there will only be a set number of available types
 			int compResult = 0;
 			if (fieldType.equals(String.class)) {
-				compResult = compareTo((String) field.get(rowData));
+				if (isReference) {
+					compResult = compareTo((String) field.get(rowData), (String) refField.get(rowData));
+				} else {
+					compResult = compareTo((String) field.get(rowData));
+				}
 			} else if (fieldType.equals(Integer.class)) {
-				compResult = compareTo((Integer) field.get(rowData));
+				if (isReference) {
+					compResult = compareTo((Integer) field.get(rowData), (Integer) refField.get(rowData));
+				} else {
+					compResult = compareTo((Integer) field.get(rowData));
+				}
 			} else if (fieldType.equals(Double.class)) {
-				compResult = compareTo((Double) field.get(rowData));
+				if (isReference) {
+					compResult = compareTo((Double) field.get(rowData), (Double) refField.get(rowData));
+				} else {
+					compResult = compareTo((Double) field.get(rowData));
+				}
 			}
 			
 			// Determine the comparison result
@@ -142,6 +170,18 @@ public class WhereClause {
 	 */
 	protected int compareTo(Double subject) {
 		return subject.compareTo((Double) mValue);
+	}
+	
+	protected int compareTo(String s1, String s2) {
+		return s1.compareTo(s2);
+	}
+	
+	protected int compareTo(Integer i1, Integer i2) {
+		return i1.compareTo(i2);
+	}
+	
+	protected int compareTo(Double d1, Double d2) {
+		return d1.compareTo(d2);
 	}
 	
 	public String toString() {

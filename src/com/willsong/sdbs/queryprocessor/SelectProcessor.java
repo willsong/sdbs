@@ -58,6 +58,7 @@ public class SelectProcessor extends QueryProcessor {
 		
 		// Get fields to project
 		ArrayList<FieldDefinition> selectList = mStmt.getSelectList();
+		ArrayList<String> selectItems = new ArrayList<String>();
 		for (FieldDefinition select : selectList) {
 			
 			boolean isFullReference = select.isFull();
@@ -70,12 +71,17 @@ public class SelectProcessor extends QueryProcessor {
 					
 					if (tableMatch && table.hasField(select)) {
 						hasField = true;
+						select.setTable(table.getName());
 						break;
 					}
 				}
 				if (!hasField) {
 					throw new ProcessorException("Field does not exist in SELECT: " + select.getFullString());
 				}
+				if (selectItems.contains(select.getFullString())) {
+					throw new ProcessorException("Field is ambiguous in SELECT: " + select.getFullString());
+				}
+				selectItems.add(select.getFullString());
 				mFields.add(select);
 			} else {
 				if (isFullReference) {
@@ -83,6 +89,7 @@ public class SelectProcessor extends QueryProcessor {
 					for (Table table : mTables) {
 						if (table.getName().equals(select.getTable())) {
 							hasField = true;
+							select.setTable(table.getName());
 							break;
 						}
 					}
@@ -113,9 +120,9 @@ public class SelectProcessor extends QueryProcessor {
 				if (tableMatch && table.isValidFieldValue(field, value)) {
 					isValidField = true;
 				}
-					
 				
 				if (hasField && isValidField) {
+					field.setTable(table.getName());
 					break;
 				}
 				hasField = false;

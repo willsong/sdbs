@@ -90,13 +90,17 @@ public class FieldDefinition {
 				break;
 		}
 		
-		me += mName + ";";
+		me += (isFull() ? mTable + "_" : "") + mName + ";";
 		
 		return me;
 	}
 	
 	public String getFullString() {
-		return "" + (mTable == null ? "" : mTable +".") + mName;
+		return "" + (isFull() ? mTable +"." : "") + mName;
+	}
+	
+	public String getFullStringCode() {
+		return "" + (isFull() ? mTable +"_" : "") + mName;
 	}
 	
 	public String getTypeString(boolean camelCase) {

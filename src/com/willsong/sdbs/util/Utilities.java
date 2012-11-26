@@ -47,7 +47,7 @@ public class Utilities {
 		for (FieldDefinition fd : fields) {
 			bf.append(fd.getTypeString(true))
 				.append("_")
-				.append(fd.getName())
+				.append(fd.getFullStringCode())
 				.append("~");
 		}
 		

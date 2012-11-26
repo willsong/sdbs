@@ -60,7 +60,7 @@ public class InsertProcessor extends QueryProcessor {
 			
 			for (int i = 0; i < values.size(); i++) {
 				FieldDefinition fd = table.getFieldDefinition(i);
-				def.getField(fd.getName()).set(obj, values.get(i));
+				def.getField(fd.getFullStringCode()).set(obj, values.get(i));
 			}
 			
 			Tuple row = new Tuple(table);

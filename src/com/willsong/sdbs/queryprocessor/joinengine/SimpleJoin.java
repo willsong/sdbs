@@ -38,6 +38,8 @@ public class SimpleJoin extends JoinEngine {
 			result = AlgebraicOperations.selection(result, wheres);
 		}
 		
+		// Determine if this is a conditional join or natural/equijoin
+		
 		// Perform projection
 		if (fields.size() > 0) {
 			result = AlgebraicOperations.projection(result, fields);

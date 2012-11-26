@@ -78,7 +78,7 @@ public class AlgebraicOperations {
 			for (FieldDefinition fd : table.getFields()) {
 				if (numFields > 0) {
 					for (FieldDefinition f : fieldList) {
-						if (f.getName().equals(fd.getName())) {
+						if (f.getFullStringCode().equals(fd.getFullStringCode())) {
 							result.addField(fd);							
 						}
 					}
@@ -107,7 +107,7 @@ public class AlgebraicOperations {
 						
 						if (numFields > 0) {
 							for (FieldDefinition f : fieldList) {
-								if (f.getName().equals(fd.getName())) {
+								if (f.getFullStringCode().equals(fieldName)) {
 									newDef.getField(fieldName).set(newData, fieldValue);
 								}
 							}
@@ -123,7 +123,6 @@ public class AlgebraicOperations {
 			return result;
 		
 		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | IOException | IllegalArgumentException | NoSuchFieldException | SecurityException e) {
-			e.printStackTrace();
 			throw new ProcessorException("Failed to perform projection: " + e);
 			
 		}

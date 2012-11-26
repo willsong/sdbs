@@ -60,7 +60,7 @@ public class DBTable extends Table {
 				}
 				
 				// Create instance and add to list
-				FieldDefinition fd = new FieldDefinition(name, type);
+				FieldDefinition fd = new FieldDefinition(mName, name, type);
 				mFields.add(fd);
 				
 			} catch (NumberFormatException e) {
@@ -98,7 +98,7 @@ public class DBTable extends Table {
 				// For each field, set the value in the data instance
 				for (int i = 0; i < line.length; i++) {
 					FieldDefinition fd = mFields.get(i);
-					String name = fd.getName();
+					String name = fd.getFullStringCode();
 					String value = line[i];
 					
 					Object convValue = fd.convertValue(value);

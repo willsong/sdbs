@@ -42,7 +42,7 @@ public class CreateStatement extends Statement {
 	
 	public void addField(FieldDefinition field) {
 		mFields.add(field);
-		addStringPart(field.getName() + " " + field.getTypeString());
+		addStringPart(field.getFullStringCode() + " " + field.getTypeString());
 	}
 	
 	public ArrayList<FieldDefinition> getFieldList() {

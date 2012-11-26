@@ -30,7 +30,7 @@ public class UpdateStatement extends WhereStatement {
 	
 	public void setField(FieldDefinition field) {
 		mField = field;
-		addStringPart(field.getName());
+		addStringPart(field.getFullStringCode());
 	}
 	
 	public FieldDefinition getField() {
