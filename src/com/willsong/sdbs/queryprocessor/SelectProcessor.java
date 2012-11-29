@@ -162,6 +162,7 @@ public class SelectProcessor extends QueryProcessor {
 			// @TODO: decide which is cheaper!
 //			result = SimpleJoin.join(mTables, mWheres, mFields);
 			result = SortMergeJoin.join(mTables, mWheres, mFields);
+//			result = IndexNestedLoopJoin.join(mTables, mWheres, mFields);
 		}
 		
 		// Format and print

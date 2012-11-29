@@ -8,13 +8,12 @@ import java.util.ArrayList;
  * @author	William Song, ID: 2012-23953, Email: willsong@kdb.snu.ac.kr
  */
 public abstract class QueryProcessor {
-	
-	protected long mProcTime = 0;
+
+	protected long mStartTime = 0;
 	
 	public void processQuery() throws ProcessorException {
-		long start = System.currentTimeMillis();
+		mStartTime = System.currentTimeMillis();
 		process();
-		mProcTime = System.currentTimeMillis() - start;
 	}
 	
 	protected abstract void process() throws ProcessorException;
@@ -49,10 +48,11 @@ public abstract class QueryProcessor {
 			buffer.append(horizontalRule + "\n");
 		}
 		
-		double procTime = mProcTime / 1000;
+		long procTime = System.currentTimeMillis() - mStartTime;
+		
 		int rowSize = result.size() > 1 ? result.size() - 1 : 0;
 		
-		buffer.append("\nQuery returned " + rowSize +" row(s) in " + procTime + " seconds.");
+		buffer.append("\nQuery returned " + rowSize +" row(s) in " + procTime + " ms.");
 		
 		return buffer.toString();
 	}

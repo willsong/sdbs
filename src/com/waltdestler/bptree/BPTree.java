@@ -25,7 +25,7 @@ public class BPTree<K, V> extends AbstractMap<K,V> implements SortedMap<K,V>
 	/**
 	 * Creates a new BPTree of order and leaf order 3 and assumes that all keys implement Comparable.
 	 */
-	BPTree()
+	public BPTree()
 	{
 		this(defaultComp, 3, 3);
 	}
@@ -34,7 +34,7 @@ public class BPTree<K, V> extends AbstractMap<K,V> implements SortedMap<K,V>
 	 * Creates a new BPTree of order and leaf order 3.
 	 * @param c Comparator to use to sort objects.
 	 */
-	BPTree(Comparator c)
+	public BPTree(Comparator c)
 	{
 		this(c, 3, 3);
 	}
@@ -45,7 +45,7 @@ public class BPTree<K, V> extends AbstractMap<K,V> implements SortedMap<K,V>
 	 * @param leafOrder Order of leaf nodes.
 	 * @throws IllegalArgumentException thrown if order < 3 or leafOrder < 1.
 	 */
-	BPTree(int order, int leafOrder)
+	public BPTree(int order, int leafOrder)
 		throws IllegalArgumentException
 	{
 		this(defaultComp, order, leafOrder);

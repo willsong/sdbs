@@ -3,6 +3,7 @@ package com.willsong.sdbs.queryprocessor.joinengine;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import com.willsong.sdbs.datastore.Table;
 import com.willsong.sdbs.datastore.TempTable;
@@ -24,6 +25,10 @@ public class SortMergeJoin extends JoinEngine {
 	 * @throws	ProcessorException
 	 */
 	public static Table join(ArrayList<Table> tables, ArrayList<WhereClause> wheres, ArrayList<FieldDefinition> fields) throws ProcessorException {
+		if (tables.size() > 2) {
+			throw new ProcessorException("Sort Merge Join Engine only supports up to 2 tables");
+		}
+		
 		Table prev = null;
 		Table curr = null;
 		TempTable merged = null;
