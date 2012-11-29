@@ -3,7 +3,7 @@ package com.willsong.sdbs.queryprocessor.joinengine;
 import java.util.ArrayList;
 
 import com.willsong.sdbs.datastore.Table;
-import com.willsong.sdbs.queryprocessor.AlgebraicOperations;
+import com.willsong.sdbs.queryprocessor.RowOperations;
 import com.willsong.sdbs.queryprocessor.ProcessorException;
 import com.willsong.sdbs.statement.FieldDefinition;
 import com.willsong.sdbs.statement.WhereClause;
@@ -30,19 +30,17 @@ public class SimpleJoin extends JoinEngine {
 		if (tables.size() == 1) {
 			 result = tables.get(0);
 		} else {
-			result = AlgebraicOperations.crossProduct(tables);
+			result = RowOperations.crossProduct(tables);
 		}
 		
 		// Perform selection
 		if (wheres.size() > 0) {
-			result = AlgebraicOperations.selection(result, wheres);
+			result = RowOperations.selection(result, wheres);
 		}
-		
-		// Determine if this is a conditional join or natural/equijoin
 		
 		// Perform projection
 		if (fields.size() > 0) {
-			result = AlgebraicOperations.projection(result, fields);
+			result = RowOperations.projection(result, fields);
 		}
 		
 		return result;

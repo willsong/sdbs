@@ -26,6 +26,12 @@ public class Tuple {
 		return mData;
 	}
 	
+	public Object getValue(Field field) throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
+//		System.out.println("second final check: " + field.getDeclaringClass() + "      " + mData.getClass());
+//		System.out.println("third check: " + field.getDeclaringClass().isAssignableFrom(mData.getClass()));
+		return field.get(mData);
+	}
+	
 	public boolean equals(String name, Object value) {
 		try {
 			return mData.getClass().getField(name).get(mData).equals(value);

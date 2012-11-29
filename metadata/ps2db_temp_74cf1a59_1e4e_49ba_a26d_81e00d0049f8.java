@@ -1,0 +1,2 @@
+// Generated file, DO NOT MODIFY!!!
+import com.willsong.sdbs.datastore.TableDefinition;public class ps2db_temp_74cf1a59_1e4e_49ba_a26d_81e00d0049f8 extends TableDefinition{public String Students_name;public Integer Students_sid;public String Students_major;public Integer Students_age;}

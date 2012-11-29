@@ -6,7 +6,7 @@ import com.willsong.sdbs.datastore.Catalog;
 import com.willsong.sdbs.datastore.Database;
 import com.willsong.sdbs.datastore.Table;
 import com.willsong.sdbs.datastore.Tuple;
-import com.willsong.sdbs.queryprocessor.joinengine.SimpleJoin;
+import com.willsong.sdbs.queryprocessor.joinengine.SortMergeJoin;
 import com.willsong.sdbs.statement.FieldDefinition;
 import com.willsong.sdbs.statement.SelectStatement;
 import com.willsong.sdbs.statement.WhereClause;
@@ -149,17 +149,19 @@ public class SelectProcessor extends QueryProcessor {
 			 
 			// Perform selection
 			if (mWheres.size() > 0) {
-				result = AlgebraicOperations.selection(result, mWheres);
+				result = RowOperations.selection(result, mWheres);
 			}
 			
 			// Perform projection
 			if (mFields.size() > 0) {
-				result = AlgebraicOperations.projection(result, mFields);
+				result = RowOperations.projection(result, mFields);
 			}
 			
 		} else {
 			// Join
-			result = SimpleJoin.join(mTables, mWheres, mFields);
+			// @TODO: decide which is cheaper!
+//			result = SimpleJoin.join(mTables, mWheres, mFields);
+			result = SortMergeJoin.join(mTables, mWheres, mFields);
 		}
 		
 		// Format and print

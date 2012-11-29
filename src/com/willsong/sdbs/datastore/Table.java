@@ -80,6 +80,39 @@ public class Table {
 	}
 	
 	/**
+	 * Attempts to get the Field object of this table of the corresponding fielddefinition
+	 * object given.
+	 * 
+	 * @param	fieldName	the field to look for
+	 * @return				the Field object if found, null otherwise
+	 */
+	public Field getField(FieldDefinition fieldName) {
+		if (mDef == null) {
+			return null;
+		}
+		
+		try {
+			return mDef.getField(fieldName.getFullStringCode());
+		} catch (NoSuchFieldException | SecurityException e) {
+			// Try again with the full name
+			fieldName.setTable(mName);
+			try {
+				return mDef.getField(fieldName.getFullStringCode());
+			} catch (NoSuchFieldException | SecurityException e1) {
+				fieldName.setTable(null);
+				return null;
+			}
+		}
+	}
+	
+	/**
+	 * Empty the current tuples.
+	 */
+	public void empty() {
+		mTuples = new ArrayList<Tuple>();
+	}
+	
+	/**
 	 * Determines whether the given value is a valid type for the given field or not.
 	 * 
 	 * @param	field		the reference of the field to check
@@ -176,20 +209,75 @@ public class Table {
 		mDatabase.addTable(mName, this);
 	}
 	
+	/**
+	 * Retrieve the full display name (in <database>.<table> notation) of this table.
+	 * 
+	 * @return	the full display name
+	 */
 	public String getFullDisplayName() {
 		return mDatabase.getName() + "." + mName;
 	}
 	
+	/**
+	 * Get the name of this table.
+	 * 
+	 * @return	the name of the table
+	 */
 	public String getName() {
 		return mName;
 	}
 	
+	/**
+	 * Retrieve the number of fields in this table.
+	 * 
+	 * @return	the number of fields
+	 */
 	public int getNumFields() {
 		return mFields.size();
 	}
 	
+	/**
+	 * Retrieve the number of tuples in this table.
+	 * 
+	 * @return	the number of tuples
+	 */
+	public int getNumRows() {
+		return mTuples.size();
+	}
+	
+	/**
+	 * Retrieve the database for this table.
+	 * 
+	 * @return	the database object
+	 */
 	public Database getDatabase() {
 		return mDatabase;
+	}
+	
+	/**
+	 * Retrieves the tuple at the given row.
+	 * 
+	 * @param	rowNum	the tuple row to retrieve
+	 * @return			the corresponding tuple
+	 */
+	public Tuple getTuple(int rowNum) {
+		return getTuple(rowNum, false);
+	}
+	
+	/**
+	 * Retrieves the tuple at the given row, with the option of removing it from
+	 * the data set.
+	 * 
+	 * @param	rowNum	the tuple row to retrieve
+	 * @param	remove	set to true to remove it from the data set, false to just fetch
+	 * @return			the corresponding tuple
+	 */
+	public Tuple getTuple(int rowNum, boolean remove) {
+		if (remove) {
+			return mTuples.remove(rowNum);
+		} else {
+			return mTuples.get(rowNum);
+		}
 	}
 	
 	public ArrayList<Tuple> getTuples(WhereClause where) {
